@@ -59,7 +59,11 @@
 			<artifactId>jakarta.persistence-api</artifactId>
 			<version>3.1.0</version> <!-- Or the version compatible with your framework -->
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>1.6.4.RELEASE</version> <!-- Use the version compatible with your Spring Boot version -->
+		</dependency>
 	</dependencies>
 
 	<build>

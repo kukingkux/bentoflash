@@ -11,20 +11,22 @@ import jakarta.persistence.Table;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    private String email;
+    private Long userId;
+    private String username;
     private int karmaScore = 100;
 
     public User() {}
 
+    public boolean login(String token) {
+        // Mock auth for frontend (nextjs)
+        return token != null && !token.isEmpty();
+    }
+
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public Long getId() { return userId; }
+    public void setId(Long userId) { this.userId = userId; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
     public int getKarmaScore() { return karmaScore; }
     public void setKarmaScore(int karmaScore) { this.karmaScore = karmaScore; }
 }
