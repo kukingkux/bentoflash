@@ -21,6 +21,19 @@ public abstract class CatalogItem {
     private String name;
     private double basePrice;
     private double currentPrice;
+    private String skuCode;
+
+    public abstract String getPackagingType();
 
     // Getter, Setter, Constructor
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public double getBasePrice() { return basePrice; }
+    public void setBasePrice(double basePrice) { this.basePrice = basePrice; }
+    public double getCurrentPrice() { return currentPrice; }
+    public void setCurrentPrice(double currentPrice) { this.currentPrice = currentPrice; }
+    public String getSkuCode() { return skuCode; }
+    public void setSkuCode(String skuCode) { this.skuCode = skuCode; }
 }

@@ -7,9 +7,9 @@ INSERT INTO users (name, email, karma_score) VALUES
 
 -- Elfan Modul 2: Flash Pricing)
 INSERT INTO catalog_items (item_type, name, base_price, current_price) VALUES 
-('BENTO', 'Rendang Padang Premium Bento', 35000.00, 35000.00), -- Eligible for discount, dapet diskon
-('BENTO', 'Ayam Penyet Pedas Flash', 25000.00, 25000.00),      -- Eligible for discount, dapet diskon
-('BEVERAGE', 'Es Teh Manis Segar', 5000.00, 5000.00);          -- Not Perishable (Exempt), tidak dapat diskon
+('BENTO', 'Rendang Padang Premium Bento', 35000.00, 35000.00, 'SKU-BENTO-RENDANG'), -- Eligible for discount, dapet diskon
+('BENTO', 'Ayam Penyet Pedas Flash', 25000.00, 25000.00, 'SKU-BENTO-AYAM'),      -- Eligible for discount, dapet diskon
+('BEVERAGE', 'Es Teh Manis Segar', 5000.00, 5000.00, 'SKU-BEV-ESTEH');          -- Not Perishable (Exempt), tidak dapat diskon
 
 
 --Hafidh Modul 5: Macro Calculator)

@@ -13,6 +13,8 @@ import jakarta.persistence.ManyToMany;
 @Entity
 @DiscriminatorValue("BENTO")
 public class LocalCultureBento extends CatalogItem implements IPerishable {
+    private int calorieCount;
+
     @ManyToMany
     @JoinTable(
         name = "bento_ingredients",
@@ -20,6 +22,13 @@ public class LocalCultureBento extends CatalogItem implements IPerishable {
         inverseJoinColumns = @JoinColumn(name = "ingredient_id")
     )
     private List<Ingredient> ingredients;
+
+    public LocalCultureBento() {}
+
+    @Override
+    public String getPackagingType() {
+        return "Eco-friendly Cardboard Box";
+    }
 
     @Override
     public void applyEndOfDayDiscount() {
@@ -32,4 +41,8 @@ public class LocalCultureBento extends CatalogItem implements IPerishable {
     }
 
     // Getter Setter
+    public int getCalorieCount() { return calorieCount; }
+    public void setCalorieCount(int calorieCount) { this.calorieCount = calorieCount; }
+    public List<Ingredient> getIngredients() { return ingredients; }
+    public void setIngredients(List<Ingredient> ingredients) { this.ingredients = ingredients; }
 }

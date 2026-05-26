@@ -19,6 +19,7 @@ CREATE TABLE catalog_items (
     name VARCHAR(100) NOT NULL,
     base_price DECIMAL(10, 2) NOT NULL,
     current_price DECIMAL(10, 2) NOT NULL
+    sku_code VARCHAR(50)
 );
 
 -- 3. Ingredients Table (Modul 5: Hafidh)
@@ -46,6 +47,7 @@ CREATE TABLE orders (
     user_id BIGINT,
     item_id BIGINT,
     pickup_code VARCHAR(20),
+    is_picked_up BOOLEAN DEFAULT FALSE,
     status VARCHAR(20) DEFAULT 'PENDING',
     order_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),

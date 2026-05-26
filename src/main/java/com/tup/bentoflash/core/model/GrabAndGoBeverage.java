@@ -10,10 +10,10 @@ public class GrabAndGoBeverage extends CatalogItem {
 
     public GrabAndGoBeverage() {}
 
-    // @Override
-    // public String getPackagingType() {
-    //     return "Recyclable PET Bottle";
-    // }
+    @Override
+    public String getPackagingType() {
+        return "Recyclable PET Bottle";
+    }
 
     public boolean isIsRefrigerated() { return isRefrigerated; }
     public void setIsRefrigerated(boolean isRefrigerated) { this.isRefrigerated = isRefrigerated;}
