@@ -1,5 +1,10 @@
 package com.tup.bentoflash.queue;
 
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.Random;
+import com.tup.bentoflash.core.model.Order;
+
 public class QueueManager {
     private Queue<Order> activeOrders;
 
@@ -29,7 +34,7 @@ public class QueueManager {
         
         for (Order order : activeOrders) {
             if (order.getPickupCode().equals(pickupCode)) {
-                order.setReady(true);
+                order.setStatus("READY");
                 System.out.println("[SISTEM] Pesanan dengan kode " + pickupCode + " sudah SIAP diambil!");
                 isFound = true;
                 break;
@@ -48,7 +53,7 @@ public class QueueManager {
             System.out.println("Antrean kosong.");
         } else {
             for (Order order : activeOrders) {
-                System.out.println("- " + order.getPickupCode() + " | Status Siap: " + order.isReady());
+                System.out.println("- " + order.getPickupCode() + " | Status: " + order.getStatus());
             }
         }
     }
