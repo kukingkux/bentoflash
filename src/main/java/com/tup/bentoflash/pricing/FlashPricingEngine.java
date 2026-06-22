@@ -1,16 +1,16 @@
 package com.tup.bentoflash.pricing;
 
-import com.tup.bentoflash.core.model.CatalogItem;
-import com.tup.bentoflash.core.repository.IPerishable;
-import com.tup.bentoflash.core.model.LocalCultureBento;
-
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import com.tup.bentoflash.core.model.CatalogItem;
+import com.tup.bentoflash.core.model.LocalCultureBento;
+import com.tup.bentoflash.core.repository.IPerishable;
 
 @Service
 public class FlashPricingEngine {

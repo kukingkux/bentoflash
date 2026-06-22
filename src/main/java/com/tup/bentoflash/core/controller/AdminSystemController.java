@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tup.bentoflash.core.model.CatalogItem;
@@ -40,15 +41,12 @@ public class AdminSystemController {
     private UserRepository userRepository;
     
     @PostMapping("/cron/trigger-discount")
-    public ResponseEntity<Map<String, Object>> forceTimeLeapToFourteen() {
-        // set discount hour to 14:00
-        flashPricingEngine.setDiscountStartHour(14);
+    public ResponseEntity<Map<String, Object>> triggerFlashSale(@RequestParam(defaultValue = "14") int targetHour) {
+        flashPricingEngine.setDiscountStartHour(targetHour);
         
-        // get all items
         List<CatalogItem> allItems = catalogItemRepository.findAll();
         List<CatalogItem> discountedItems = flashPricingEngine.applyFlashDiscounts(allItems);
 
-        // save discounted items
         catalogItemRepository.saveAll(discountedItems);
 
         return ResponseEntity.ok(Map.of(
@@ -58,8 +56,31 @@ public class AdminSystemController {
             "message", "FlashPricingEngine executed via instanceof IPerishable. 40% discount applied."
         ));
     }
+    
+    @PostMapping("/cron/reset-discount")
+    public ResponseEntity<Map<String, Object>> resetFlashSale() {
+        try {
+            List<CatalogItem> allItems = catalogItemRepository.findAll();
+            
+            flashPricingEngine.resetAllDailyPrices(allItems);
+            
+            catalogItemRepository.saveAll(allItems);
+            
+            return ResponseEntity.ok(Map.of(
+                "status", "SUCCESS",
+                "itemsAffectedCount", allItems.size(),
+                "message", "Harga seluruh inventory telah berhasil di-reset kembali ke Base Price normal."
+            ));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "status", "FAILED",
+                "error", e.getMessage()
+            ));
+        }
+    }
 
-    // ghosting user simulation
     @PutMapping("/users/{userId}/ghost")
     public ResponseEntity<?> simulateGhostUser(@PathVariable int userId) {
         User user = userRepository.findById((long) userId).orElse(null);
@@ -79,6 +100,24 @@ public class AdminSystemController {
             "previousKarmaScore", currentScore,
             "newKarmaScore", savedUser.getKarmaScore(),
             "isCritical", karmaEngine.isScoreCritical(savedUser.getKarmaScore())
+        ));
+    }
+
+    @GetMapping("/users/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable int id) {
+        User user = userRepository.findById((long) id).orElse(null);
+        
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "User dengan ID " + id + " tidak ditemukan"));
+        }
+
+        return ResponseEntity.ok(Map.of(
+            "userId", user.getId(),
+            "name", user.getUsername(),
+            "email", user.getEmail(),
+            "karmaScore", user.getKarmaScore(),
+            "loyaltyStatus", user.getKarmaScore() >= 100 ? "ELIGIBLE FOR EARLY RESERVATION" : "WARNING: LOW KARMA"
         ));
     }
 

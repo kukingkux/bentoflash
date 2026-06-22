@@ -41,6 +41,9 @@ public class AdminKitchenController {
             activeQueueResponses.add(new OrderResponse(
                 order.getId().intValue(),
                 order.getItem().getSkuCode(),
+                order.getItem().getName(),
+                order.getUser().getId().intValue(),
+                order.getOrderTime(),
                 order.getStatus(),
                 order.isPickedUp(),
                 order.getPickupCode()

@@ -55,12 +55,12 @@ public class BentoMarketController {
 
         for (CatalogItem item : items) {
             Map<String, Object> map = new LinkedHashMap<>();
+            map.put("id", item.getId());
             map.put("skuCode", item.getSkuCode());
             map.put("name", item.getName());
             map.put("basePrice", item.getBasePrice());
             map.put("currentPrice", item.getCurrentPrice());
             map.put("packagingType", item.getPackagingType());
-
             // Count calorie and macros jika item LocalCultureBento
             if (item instanceof LocalCultureBento bento) {
                 // Hitung total kalori

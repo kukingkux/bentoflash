@@ -12,11 +12,15 @@ import com.tup.bentoflash.core.dto.AuthDTOs.LoginRequest;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000/")
 public class AuthController {
     
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> simulateLogin(@RequestBody LoginRequest request) {
+        if (request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         // Swap roles based on token strings
         if ("kitchen-token".equals(request.getToken())) {
             return ResponseEntity.ok(new AuthResponse(1, "Chef Garcia", "KITCHEN_STAFF", 100));
