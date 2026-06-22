@@ -1,5 +1,7 @@
 package com.tup.bentoflash.karma;
 
+import org.springframework.stereotype.Service;
+
 /**
  * KarmaEngine.java
  * Module 4 - Karma & Loyalty System
@@ -8,6 +10,7 @@ package com.tup.bentoflash.karma;
  * All score mutations must pass through this engine to ensure consistent
  * bounds enforcement and business rule application.
  */
+@Service
 public class KarmaEngine {
 
     // -------------------------------------------------------------------------

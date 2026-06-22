@@ -1,10 +1,14 @@
 package com.tup.bentoflash.queue;
 
-import java.util.Queue;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
+
+import org.springframework.stereotype.Service;
+
 import com.tup.bentoflash.core.model.Order;
 
+@Service
 public class QueueManager {
     private Queue<Order> activeOrders;
 

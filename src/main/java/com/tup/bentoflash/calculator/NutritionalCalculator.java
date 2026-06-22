@@ -1,10 +1,13 @@
 package com.tup.bentoflash.calculator;
 
-import com.tup.bentoflash.core.model.Ingredient;
-import com.tup.bentoflash.core.model.LocalCultureBento;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
 
+import com.tup.bentoflash.core.model.Ingredient;
+import com.tup.bentoflash.core.model.LocalCultureBento;
+
+@Service
 public class NutritionalCalculator {
 
     public double calculateTotalCalories(LocalCultureBento bento) {
