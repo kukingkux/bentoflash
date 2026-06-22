@@ -14,12 +14,13 @@ import jakarta.persistence.ManyToMany;
 @DiscriminatorValue("BENTO")
 public class LocalCultureBento extends CatalogItem implements IPerishable {
     private int calorieCount;
+    private boolean discountApplied;
 
     @ManyToMany
     @JoinTable(
-        name = "bento_ingredients",
-        joinColumns = @JoinColumn(name = "bento_id"),
-        inverseJoinColumns = @JoinColumn(name = "ingredient_id")
+            name = "bento_ingredients",
+            joinColumns = @JoinColumn(name = "bento_id"),
+            inverseJoinColumns = @JoinColumn(name = "ingredient_id")
     )
     private List<Ingredient> ingredients;
 
@@ -32,7 +33,12 @@ public class LocalCultureBento extends CatalogItem implements IPerishable {
 
     @Override
     public void applyEndOfDayDiscount() {
-        // Elfan: Modul 2 Logic
+        if (discountApplied) {
+            return;
+        }
+        double potongan = 0.40 * getBasePrice();
+        setCurrentPrice(getBasePrice() - potongan);
+        discountApplied = true;
     }
 
     @Override
@@ -40,7 +46,12 @@ public class LocalCultureBento extends CatalogItem implements IPerishable {
         return false;
     }
 
-    // Getter Setter
+    public void resetDailyPrice() {
+        setCurrentPrice(getBasePrice());
+        this.discountApplied = false;
+    }
+
+    public boolean isDiscountApplied() { return discountApplied; }
     public int getCalorieCount() { return calorieCount; }
     public void setCalorieCount(int calorieCount) { this.calorieCount = calorieCount; }
     public List<Ingredient> getIngredients() { return ingredients; }
