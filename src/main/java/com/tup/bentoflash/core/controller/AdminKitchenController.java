@@ -2,8 +2,10 @@ package com.tup.bentoflash.core.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,9 +50,28 @@ public class AdminKitchenController {
     }
 
     @PutMapping("/queue/{orderId}/ready")
-    public ResponseEntity<OrderResponse> markOrderReady(@PathVariable int orderId) {
-        OrderResponse readyOrder = new OrderResponse(orderId, "TT-BNTO-RENDANG-01", "READY", false, "BNTO-XYZ27");
-        return ResponseEntity.ok(readyOrder);
+    public ResponseEntity<?> markOrderReady(@PathVariable int orderId) {
+        Order order = orderRepository.findById((long) orderId).orElse(null);
+        if (order == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Order ID tidak valid"));
+        }
+
+        // Panggil mutator dari modul milik Rafael untuk merubah status antrean internal
+        queueManager.markReady(order.getPickupCode());
+
+        // Sinkronisasi status objek ke database
+        order.setStatus("READY");
+        Order updatedOrder = orderRepository.save(order);
+
+        OrderResponse response = new OrderResponse(
+            updatedOrder.getId().intValue(),
+            updatedOrder.getItem().getSkuCode(),
+            updatedOrder.getStatus(),
+            updatedOrder.isPickedUp(),
+            updatedOrder.getPickupCode()
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/items/{skuCode}/stock")
