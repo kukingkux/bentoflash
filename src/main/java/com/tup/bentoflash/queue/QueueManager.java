@@ -49,6 +49,11 @@ public class QueueManager {
             System.out.println("[ERROR] Pesanan dengan kode " + pickupCode + " tidak ditemukan di antrean aktif.");
         }
     }
+
+    // getter activeOrders
+    public java.util.Queue<Order> getActiveOrders() {
+        return this.activeOrders;
+    }
     
     // (Opsional) Method untuk melihat isi antrean saat ini.
     public void displayQueue() {
