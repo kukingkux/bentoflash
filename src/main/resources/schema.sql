@@ -18,8 +18,11 @@ CREATE TABLE catalog_items (
     item_type VARCHAR(20) NOT NULL, -- Handles Single-Table Inheritance ('BENTO')
     name VARCHAR(100) NOT NULL,
     base_price DECIMAL(10, 2) NOT NULL,
-    current_price DECIMAL(10, 2) NOT NULL
-    sku_code VARCHAR(50)
+    current_price DECIMAL(10, 2) NOT NULL,
+    sku_code VARCHAR(50),
+    calorie_count INT NOT NULL DEFAULT 0,
+    discount_applied BOOLEAN NOT NULL DEFAULT FALSE,
+    is_refrigerated BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- 3. Ingredients Table (Modul 5: Hafidh)
@@ -43,7 +46,7 @@ CREATE TABLE bento_ingredients (
 
 -- 5. Orders Table (Modul 3: Rafael)
 CREATE TABLE orders (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT,
     item_id BIGINT,
     pickup_code VARCHAR(20),

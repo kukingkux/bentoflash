@@ -24,7 +24,7 @@ import com.tup.bentoflash.queue.QueueManager;
 
 @RestController
 @RequestMapping("/api/admin/kitchen")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class AdminKitchenController {
 
     @Autowired

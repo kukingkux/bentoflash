@@ -24,7 +24,7 @@ import com.tup.bentoflash.pricing.FlashPricingEngine;
 
 @RestController
 @RequestMapping("/api/admin/system")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class AdminSystemController {
 
     @Autowired

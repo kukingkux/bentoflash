@@ -30,7 +30,7 @@ import com.tup.bentoflash.queue.QueueManager;
 
 @RestController
 @RequestMapping("/api/bento-market")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class BentoMarketController {
 
     @Autowired
