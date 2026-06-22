@@ -1,17 +1,22 @@
 package com.tup.bentoflash.core.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tup.bentoflash.core.model.CatalogItem;
+import com.tup.bentoflash.core.model.User;
 import com.tup.bentoflash.core.repository.CatalogItemRepository;
 import com.tup.bentoflash.core.repository.UserRepository;
 import com.tup.bentoflash.karma.KarmaEngine;
@@ -54,11 +59,42 @@ public class AdminSystemController {
         ));
     }
 
+    // ghosting user simulation
+    @PutMapping("/users/{userId}/ghost")
+    public ResponseEntity<?> simulateGhostUser(@PathVariable int userId) {
+        User user = userRepository.findById((long) userId).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User tidak ada"));
+        }
+
+        int currentScore = user.getKarmaScore();
+        int updatedScore = karmaEngine.calculateNewScore(currentScore, false);
+        
+        user.setKarmaScore(updatedScore);
+        User savedUser = userRepository.save(user);
+
+        return ResponseEntity.ok(Map.of(
+            "userId", savedUser.getId(),
+            "username", savedUser.getUsername(),
+            "previousKarmaScore", currentScore,
+            "newKarmaScore", savedUser.getKarmaScore(),
+            "isCritical", karmaEngine.isScoreCritical(savedUser.getKarmaScore())
+        ));
+    }
+
     @GetMapping("/karma-logs")
     public ResponseEntity<List<Map<String, Object>>> getKarmaLogs() {
-        return ResponseEntity.ok(List.of(
-            Map.of("userId", 3, "username", "Ahmed Guntir", "karmaScore", 120, "status", "GOOD"),
-            Map.of("userId", 4, "username", "Dodit Ready", "karmaScore", 70, "status", "BAD")
-        ));
+        List<User> users = userRepository.findAll();
+        List<Map<String, Object>> logs = new ArrayList<>();
+
+        for (User u : users) {
+            logs.add(Map.of(
+                "userId", u.getId(),
+                "username", u.getUsername(),
+                "karmaScore", u.getKarmaScore(),
+                "status", u.getKarmaScore() > 70 ? "GOOD" : "BAD"
+            ));
+        }
+        return ResponseEntity.ok(logs);
     }
 }
