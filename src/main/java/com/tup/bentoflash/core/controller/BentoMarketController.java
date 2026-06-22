@@ -20,6 +20,8 @@ import com.tup.bentoflash.core.dto.MarketplaceDTOs.OrderResponse;
 import com.tup.bentoflash.core.dto.MarketplaceDTOs.ReservationRequest;
 import com.tup.bentoflash.core.model.CatalogItem;
 import com.tup.bentoflash.core.model.LocalCultureBento;
+import com.tup.bentoflash.core.model.Order;
+import com.tup.bentoflash.core.model.User;
 import com.tup.bentoflash.core.repository.CatalogItemRepository;
 import com.tup.bentoflash.core.repository.OrderRepository;
 import com.tup.bentoflash.core.repository.UserRepository;
@@ -59,9 +61,9 @@ public class BentoMarketController {
             map.put("currentPrice", item.getCurrentPrice());
             map.put("packagingType", item.getPackagingType());
 
-            // Pembuktian Polimorfisme & Agregasi Modul Hafidh
+            // Count calorie and macros jika item LocalCultureBento
             if (item instanceof LocalCultureBento bento) {
-                // Hitung total kalori secara dinamis dari tumpukan Ingredient bento tersebut
+                // Hitung total kalori
                 double totalCal = nutritionalCalculator.calculateTotalCalories(bento);
                 String macros = nutritionalCalculator.calculateMacros(bento);
                 
@@ -79,9 +81,45 @@ public class BentoMarketController {
 
 
     @PostMapping("/reserve")
-    public ResponseEntity<OrderResponse> reserveBento(@RequestBody ReservationRequest request) {
-        // Simulates Receipt. Phase 3 hooks: queueManager.addToQueue(order)
-        OrderResponse mockOrder = new OrderResponse(104, request.getSkuCode(), "PENDING", false, null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(mockOrder);
+    public ResponseEntity<?> reserveBento(@RequestBody ReservationRequest request) {
+        // 1. Validasi User
+        User user = userRepository.findById((long) request.getUserId()).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User tidak ditemukan"));
+        }
+
+        // 2. Validasi Item via SKU
+        CatalogItem item = catalogItemRepository.findAll().stream()
+                .filter(i -> i.getSkuCode().equals(request.getSkuCode()))
+                .findFirst()
+                .orElse(null);
+        if (item == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Bento dengan SKU tersebut tidak ditemukan"));
+        }
+
+        // 3. Buat Object Order Baru & Sambungkan ke Antrean FIFO Rafael
+        Order order = new Order();
+        order.setUser(user);
+        order.setItem(item);
+        order.setStatus("PENDING");
+        
+        // Get unique code
+        String uniqueCode = queueManager.generatePickupCode();
+        order.setPickupCode(uniqueCode);
+
+        // 4. Persist ke Database Antrean Dapur
+        Order savedOrder = orderRepository.save(order);
+        queueManager.addToQueue(savedOrder);
+
+        // 5. Convert Long to int for frontend
+        OrderResponse response = new OrderResponse(
+                savedOrder.getId().intValue(),
+                savedOrder.getItem().getSkuCode(),
+                savedOrder.getStatus(),
+                savedOrder.isPickedUp(),
+                savedOrder.getPickupCode()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
