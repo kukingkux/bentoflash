@@ -41,7 +41,18 @@ public class AdminSystemController {
     private UserRepository userRepository;
     
     @PostMapping("/cron/trigger-discount")
-    public ResponseEntity<Map<String, Object>> triggerFlashSale(@RequestParam(defaultValue = "14") int targetHour) {
+    public ResponseEntity<Map<String, Object>> triggerFlashSale(@RequestParam(name = "time", defaultValue = "14:00") String time) {
+        int targetHour = 14;
+        try {
+            if (time.contains(":")) {
+                targetHour = Integer.parseInt(time.split(":")[0]);
+            } else {
+                targetHour = Integer.parseInt(time);
+            }
+        } catch (Exception e) {
+            targetHour = 14;
+        }
+
         flashPricingEngine.setDiscountStartHour(targetHour);
         
         List<CatalogItem> allItems = catalogItemRepository.findAll();
@@ -51,7 +62,7 @@ public class AdminSystemController {
 
         return ResponseEntity.ok(Map.of(
             "status", "SUCCESS",
-            "simulatedTime", "14:00 PM",
+            "simulatedTime", String.format("%02d:00", targetHour),
             "itemsAffectedCount", discountedItems.size(),
             "message", "FlashPricingEngine executed via instanceof IPerishable. 40% discount applied."
         ));

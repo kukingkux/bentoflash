@@ -50,6 +50,25 @@ public class QueueManager {
         }
     }
 
+    //Menandai pesanan di antrean bahwa sudah diambil (tanpa dihapus).
+    public void markDone(String pickupCode) {
+        boolean isFound = false;
+        
+        for (Order order : activeOrders) {
+            if (order.getPickupCode().equals(pickupCode)) {
+                order.setPickedUp(true);
+                order.setStatus("CLAIMED");
+                System.out.println("[SISTEM] Pesanan dengan kode " + pickupCode + " telah DIAMBIL.");
+                isFound = true;
+                break;
+            }
+        }
+        
+        if (!isFound) {
+            System.out.println("[ERROR] Pesanan dengan kode " + pickupCode + " tidak ditemukan di antrean aktif saat claim.");
+        }
+    }
+
     // getter activeOrders
     public java.util.Queue<Order> getActiveOrders() {
         return this.activeOrders;

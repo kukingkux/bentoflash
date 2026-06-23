@@ -77,6 +77,31 @@ public class AdminKitchenController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/queue/{orderId}/pickup")
+    public ResponseEntity<?> markOrderPickedUp(@PathVariable int orderId) {
+        Order order = orderRepository.findById((long) orderId).orElse(null);
+        if (order == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Order ID tidak valid"));
+        }
+
+        order.setPickedUp(true);
+        order.setStatus("CLAIMED");
+        Order updatedOrder = orderRepository.save(order);
+
+        // Sync Rafael's queue module!
+        queueManager.markDone(updatedOrder.getPickupCode());
+
+        OrderResponse response = new OrderResponse(
+            updatedOrder.getId().intValue(),
+            updatedOrder.getItem().getSkuCode(),
+            updatedOrder.getStatus(),
+            updatedOrder.isPickedUp(),
+            updatedOrder.getPickupCode()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
     @PatchMapping("/items/{skuCode}/stock")
     public ResponseEntity<Void> updateStockLevel(@PathVariable String skuCode, @RequestBody StockUpdateRequest request) {
         return ResponseEntity.noContent().build();
