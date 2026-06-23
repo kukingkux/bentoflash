@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -121,5 +122,34 @@ public class BentoMarketController {
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/items/{skuCode}/nutrition")
+    public ResponseEntity<?> getBentoNutrition(@PathVariable String skuCode) {
+        CatalogItem item = catalogItemRepository.findAll().stream()
+                .filter(i -> i.getSkuCode().equals(skuCode))
+                .findFirst()
+                .orElse(null);
+
+        if (item == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Menu dengan SKU tersebut tidak ditemukan di database."));
+        }
+
+        if (item instanceof LocalCultureBento bento) {
+            double totalCalories = nutritionalCalculator.calculateTotalCalories(bento);
+            String macros = nutritionalCalculator.calculateMacros(bento);
+
+            return ResponseEntity.ok(Map.of(
+                "skuCode", bento.getSkuCode(),
+                "menuName", bento.getName(),
+                "totalCalories", totalCalories,
+                "macros", macros,
+                "moduleStatus", "SUCCESS: Diperhitungkan oleh NutritionalCalculator"
+            ));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", "Kalkulasi gagal. Item ini bukan tipe LocalCultureBento dan tidak memiliki tumpukan bahan baku."));
+        }
     }
 }

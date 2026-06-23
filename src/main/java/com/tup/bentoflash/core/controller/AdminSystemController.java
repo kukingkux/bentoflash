@@ -120,6 +120,23 @@ public class AdminSystemController {
             "loyaltyStatus", user.getKarmaScore() >= 100 ? "ELIGIBLE FOR EARLY RESERVATION" : "WARNING: LOW KARMA"
         ));
     }
+    @GetMapping("/users")
+    public ResponseEntity<List<Map<String, Object>>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        List<Map<String, Object>> usersResponse = new ArrayList<>();
+
+        for (User user : users) {
+            usersResponse.add(Map.of(
+                "userId", user.getId(),
+                "name", user.getUsername(), // Ingat: Ubah jadi getUsername() jika bergaris merah
+                "email", user.getEmail(),
+                "karmaScore", user.getKarmaScore(),
+                "loyaltyStatus", user.getKarmaScore() >= 100 ? "ELIGIBLE FOR EARLY RESERVATION" : "WARNING: LOW KARMA"
+            ));
+        }
+
+        return ResponseEntity.ok(usersResponse);
+    }
 
     @GetMapping("/karma-logs")
     public ResponseEntity<List<Map<String, Object>>> getKarmaLogs() {
